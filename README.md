@@ -6,10 +6,13 @@ This little python daemon will sit in the background and do just that.
 
 
 ### Installation
-Download [the python script](https://raw.githubusercontent.com/grandchild/autohidewibox/master/autohidewibox.py) directly and put it somewhere nice. `~/.config/awesome/` seems fitting.
+Download [the python script](https://raw.githubusercontent.com/grandchild/autohidewibox/master/autohidewibox.py) directly and put it somewhere nice – `~/.config/awesome/` seems fitting – and make it executable.
 
 ### Usage
-You can simply add this to your autostart list on window manager load.
+You can simply add this to your autostart list on window manager load. It doesn't require special permissions to run.
+
+Should you want to kill the script, simply `killall xinput` and the script will restore the wibox and shut down.
+
 Note that if you use the little `run_once`-script that floats around, the safeguard doesn't work and you should therefore add `killall xinput` to the autostart list before `autohidewibox.py` so the old script will shutdown before awesome **re**starts.
 
 ### Dependencies
