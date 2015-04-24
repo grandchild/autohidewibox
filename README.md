@@ -31,8 +31,8 @@ Note that if you use the little `run_once`-script that floats around, the safegu
  * xorg-xinput
 
 #### TODO
-This is just a quick thing I just wrote, so it's still raw. You'll probably have to tailor the scripts in some places to fit your need.
  * independence from xinput
+ * leave wibox visible on run/lua_exec etc.
  * ???
 
 #### Credits
