@@ -11,24 +11,29 @@ Download [the python script](https://raw.githubusercontent.com/grandchild/autohi
 Arch Linux users can also install the AUR package [autohidewibox](https://aur.archlinux.org/packages/autohidewibox/).
 
 ### Usage
-You can simply add `autohidewibox.py` to your autostart list on window manager load. It doesn't require special permissions to run.
+```
+autohidewibox.py [configfile.conf]
+```
+Config files will be tried in the order
+ * commandline parameter
+ * `~/.config/autohidewibox.conf`
+ * `/etc/autohidewibox.conf`
+
+Otherwise settings default to *SuperL* and *SuperR* hiding *mywibox*.
+
+You can simply add `autohidewibox.py` to your autostart list in rc.lua. It doesn't require special permissions to run.
 
 Should you want to kill the script, simply `killall xinput` and the script will restore the wibox and shut down.
 
-Note that if you use the little `run_once`-script that floats around, the safeguard doesn't work and you should therefore add `killall xinput` to the autostart list before `autohidewibox.py` so the old script will shutdown before awesome **re**starts.
+Note that if you use the little `run_once`-script that floats around, the safeguard doesn't work and you should therefore add `killall xinput` to the autostart list before `autohidewibox.py` so the old script will shutdown before awesome *re*starts.
 
 ### Dependencies
-```
-xorg-xinput
-```
+ * xorg-xinput
 
 #### TODO
 This is just a quick thing I just wrote, so it's still raw. You'll probably have to tailor the scripts in some places to fit your need.
-```
-config file
-independence from xinput
-???
-```
+ * independence from xinput
+ * ???
 
 #### Credits
 Inspired by the first idea in http://stackoverflow.com/a/21837280 . Thanks :)

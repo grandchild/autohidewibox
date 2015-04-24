@@ -2,24 +2,43 @@
 
 import subprocess
 import re
+import configparser
+import os.path as path
+import sys
 
 
-superKeys = [
-				"133",  # Meta-L
-				"134",  # Meta-R
-				"66",   # CapsLock
-				# "37",   # Ctrl-L
-				# "105",  # Ctrl-R
-			]
+config = configparser.ConfigParser()
+try:
+	userconf = path.join(path.expanduser("~"), ".config/autohidewibox.conf")
+	if len(sys.argv)>1 and path.isfile(sys.argv[1]):
+		config.read(sys.argv[1])
+	elif path.isfile(userconf):
+		config.read(userconf)
+	else:
+		config.read("/etc/autohidewibox.conf")
+except configparser.MissingSectionHeaderError:
+	pass
 
-wiboxname = "mywibox"
+superKeys = config.get("autohidewibox",
+                       "superKeys",
+                       fallback="133,134,66"
+                      ).split(",")
+
+wiboxes = config.get("autohidewibox",
+                     "wiboxname",
+                     fallback="mywibox"
+                    ).split(",")
+# (remove the following line if your wibox variables have strange characters)
+wiboxes = [ w for w in wiboxes if re.match("^[a-zA-Z_][a-zA-Z0-9_]*$", w) ]
+#python>=3.4: wiboxes = [ w for w in wiboxes if re.fullmatch("[a-zA-Z_][a-zA-Z0-9_]*", w) ]
 
 
 def setWiboxState(visible=True):
-	subprocess.call(
+	for wibox in wiboxes:
+		subprocess.call(
 			"/usr/bin/bash " +
 			"-c \"echo '" +
-			"for k,v in pairs("+wiboxname+") do " +
+			"for k,v in pairs("+wibox+") do " +
 			"v.visible = " + ("true" if visible else "false") + " " +
 			"end"
 			"' | awesome-client\"",
@@ -61,7 +80,8 @@ try:
 						# print("hiding wibox")
 						setWiboxState(False)
 			except IndexError:
-				print("index error")
+				# print("Couldn't parse keystate number.")
+				pass
 			finally:
 				field = None
 				keystate = None
@@ -69,4 +89,4 @@ except KeyboardInterrupt:
 	pass
 finally:
 	setWiboxState(True)
-	print("shutting down")
+	# print("Shutting down")
