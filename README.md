@@ -8,8 +8,10 @@ This little python daemon will sit in the background and do just that.
 ### Installation
 Download [the python script](https://raw.githubusercontent.com/grandchild/autohidewibox/master/autohidewibox.py) directly and put it somewhere nice – `~/.config/awesome/` seems fitting – and make it executable.
 
+Arch Linux users can also install the AUR package [autohidewibox](https://aur.archlinux.org/packages/autohidewibox/).
+
 ### Usage
-You can simply add this to your autostart list on window manager load. It doesn't require special permissions to run.
+You can simply add `autohidewibox.py` to your autostart list on window manager load. It doesn't require special permissions to run.
 
 Should you want to kill the script, simply `killall xinput` and the script will restore the wibox and shut down.
 
@@ -24,7 +26,6 @@ xorg-xinput
 This is just a quick thing I just wrote, so it's still raw. You'll probably have to tailor the scripts in some places to fit your need.
 ```
 config file
-AUR package
 independence from xinput
 ???
 ```
