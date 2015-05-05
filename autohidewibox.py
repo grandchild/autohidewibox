@@ -32,6 +32,12 @@ wiboxes = config.get("autohidewibox",
 wiboxes = [ w for w in wiboxes if re.match("^[a-zA-Z_][a-zA-Z0-9_]*$", w) ]
 #python>=3.4: wiboxes = [ w for w in wiboxes if re.fullmatch("[a-zA-Z_][a-zA-Z0-9_]*", w) ]
 
+customhide = config.get("autohidewibox",
+                        "customhide",
+                        fallback=None)
+customshow = config.get("autohidewibox",
+                        "customshow",
+                        fallback=None)
 
 def setWiboxState(visible=True):
 	for wibox in wiboxes:
@@ -41,6 +47,15 @@ def setWiboxState(visible=True):
 			"for k,v in pairs("+wibox+") do " +
 			"v.visible = " + ("true" if visible else "false") + " " +
 			"end"
+			"' | awesome-client\"",
+			shell=True)
+	
+	customcmd = customshow if visible else customhide
+	if customcmd:
+		subprocess.call(
+			"/usr/bin/bash " +
+			"-c \"echo '" +
+			customcmd +
 			"' | awesome-client\"",
 			shell=True)
 

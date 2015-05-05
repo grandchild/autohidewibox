@@ -1,9 +1,10 @@
 ### Auto-hide the awesome-wibox/taskbar
-If you ever wanted to squeeze out that last bit of screen real estate in awesome and only show the wibox when needed, this is for you.
+If you ever wanted to squeeze out that last bit of screen real estate in awesome and only show the wibox when needed (i.e when pressing the ModKey), this is for you.
 
 Since awesome doesn't allow easy access to the states of the Super/Mod-Key itself in rc.lua, one cannot simply show the wibox while the ModKey is pressed and hide it again on release.
 This little python daemon will sit in the background and do just that.
 
+Extending away from what the name suggests it can also execute any custom lua code on hide or show, specified in the config file.
 
 ### Installation
 Download [the python script](https://raw.githubusercontent.com/grandchild/autohidewibox/master/autohidewibox.py) directly and put it somewhere nice – `~/.config/awesome/` seems fitting – and make it executable.
@@ -19,13 +20,13 @@ Config files will be tried in the order
  * `~/.config/autohidewibox.conf`
  * `/etc/autohidewibox.conf`
 
-Otherwise settings default to *SuperL* and *SuperR* hiding *mywibox*.
+Otherwise settings default to *SuperL* and *SuperR* toggling *mywibox*.
 
 You can simply add `autohidewibox.py` to your autostart list in rc.lua. It doesn't require special permissions to run.
 
-Should you want to kill the script, simply `killall xinput` and the script will restore the wibox and shut down.
+To terminate the script, simply `killall xinput` and the script will restore the wibox and shut down.
 
-Note that if you use the little `run_once`-script that floats around, the safeguard doesn't work and you should therefore add `killall xinput` to the autostart list before `autohidewibox.py` so the old script will shutdown before awesome *re*starts.
+Note that if, for autostarting programs, you use that little `run_once`-script that floats around, the safeguard doesn't work and you should therefore add `killall xinput` to the autostart list before `autohidewibox.py` so the old script instance will shutdown before awesome *re*starts.
 
 ### Dependencies
  * xorg-xinput
