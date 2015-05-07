@@ -34,6 +34,7 @@ Note that if, for autostarting programs, you use that little `run_once`-script t
 #### TODO
  * independence from xinput
  * leave wibox visible on run/lua_exec etc.
+ * show wibox when mouse hits bottom of the screen
  * ???
 
 #### Credits
