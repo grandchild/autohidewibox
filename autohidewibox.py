@@ -5,6 +5,7 @@ import re
 import configparser
 import os.path as path
 import sys
+import threading
 
 
 config = configparser.ConfigParser()
@@ -39,18 +40,45 @@ customshow = config.get("autohidewibox",
                         "customshow",
                         fallback=None)
 
-def setWiboxState(visible=True):
+delayShow = config.getfloat("autohidewibox",
+                   "delayShow",
+                   fallback=0)
+delayHide = config.getfloat("autohidewibox",
+                   "delayHide",
+                   fallback=0)
+delay = {True: delayShow, False: delayHide}
+delayThread = None
+waitingFor = False
+cancel = threading.Event()
+
+
+def setWiboxState(state=True, immediate=False):
+	global delayThread, waitingFor, cancel
+	if delay[not state] > 0:
+		if type(delayThread) == threading.Thread and delayThread.is_alive():
+			# two consecutive opposing events cancel out. second event should not be called
+			cancel.set()
+			return
+	if delay[state] > 0 and not immediate:
+		if not (type(delayThread) == threading.Thread and delayThread.is_alive()):
+			waitingFor = state
+			cancel.clear()
+			delayThread = threading.Thread(group=None, target=waitDelay, kwargs={"state": state})
+			delayThread.daemon = True
+			delayThread.start()
+		# a second event setting the same state is silently discarded
+		return
 	for wibox in wiboxes:
 		subprocess.call(
 			"/usr/bin/bash " +
 			"-c \"echo '" +
 			"for k,v in pairs("+wibox+") do " +
-			"v.visible = " + ("true" if visible else "false") + " " +
+			"v.visible = " + ("true" if state else "false") + " " +
 			"end"
 			"' | awesome-client\"",
 			shell=True)
 	
-	customcmd = customshow if visible else customhide
+	customcmd = customshow if state else customhide
 	if customcmd:
 		subprocess.call(
 			"/usr/bin/bash " +
@@ -58,6 +86,11 @@ def setWiboxState(visible=True):
 			customcmd +
 			"' | awesome-client\"",
 			shell=True)
+
+
+def waitDelay(state=True):
+	if not cancel.wait(delay[state]/1000):
+		setWiboxState(state=state, immediate=True)
 
 
 try:
@@ -103,5 +136,5 @@ try:
 except KeyboardInterrupt:
 	pass
 finally:
-	setWiboxState(True)
+	setWiboxState(True, True)
 	# print("Shutting down")
