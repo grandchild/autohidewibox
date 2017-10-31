@@ -58,7 +58,7 @@ for p in bashPotentialPaths:
 		bashPath = p
 		break
 if bashPath == "":
-	print("Sorry, I couldn't find bash in any of: " + ",".join(bashPotentialPaths))
+	print("Can't find bash in any of: " + ",".join(bashPotentialPaths), file=sys.stderr)
 	sys.exit(1)
 
 def setWiboxState(state=True, immediate=False):
