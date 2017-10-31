@@ -20,6 +20,9 @@ try:
 except configparser.MissingSectionHeaderError:
 	pass
 
+awesomeVersion = config.get("autohidewibox",
+                            "awesomeVersion",
+                            fallback=4)
 superKeys = config.get("autohidewibox",
                        "superKeys",
                        fallback="133,134,66"
@@ -61,6 +64,14 @@ if shPath == "":
 	print("Can't find sh in any of: " + ",".join(shPotentialPaths), file=sys.stderr)
 	sys.exit(1)
 
+hideCommand3 = "for k,v in pairs({wibox}) do v.visible = {state} end"
+hideCommand4 = "for s in screen do s.{wibox}.visible = {state} end"
+try:
+	hideCommand = hideCommand4 if int(awesomeVersion) >= 4 else hideCommand3
+except ValueError:
+	hideCommand = hideCommand4
+
+
 def setWiboxState(state=True, immediate=False):
 	global delayThread, waitingFor, cancel
 	if delay[not state] > 0:
@@ -81,9 +92,7 @@ def setWiboxState(state=True, immediate=False):
 		subprocess.call(
 			shPath + " " +
 			"-c \"echo '" +
-			"for k,v in pairs("+wibox+") do " +
-			"v.visible = " + ("true" if state else "false") + " " +
-			"end"
+			hideCommand.format(wibox=wibox, state="true" if state else "false") +
 			"' | awesome-client\"",
 			shell=True)
 	
