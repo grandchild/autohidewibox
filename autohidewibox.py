@@ -51,14 +51,14 @@ delayThread = None
 waitingFor = False
 cancel = threading.Event()
 
-bashPath = ""
-bashPotentialPaths = ["/usr/bin/bash", "/bin/bash"]
-for p in bashPotentialPaths:
+shPath = ""
+shPotentialPaths = ["/usr/bin/sh", "/bin/sh"]
+for p in shPotentialPaths:
 	if path.exists(p):
-		bashPath = p
+		shPath = p
 		break
-if bashPath == "":
-	print("Can't find bash in any of: " + ",".join(bashPotentialPaths), file=sys.stderr)
+if shPath == "":
+	print("Can't find sh in any of: " + ",".join(shPotentialPaths), file=sys.stderr)
 	sys.exit(1)
 
 def setWiboxState(state=True, immediate=False):
@@ -79,7 +79,7 @@ def setWiboxState(state=True, immediate=False):
 		return
 	for wibox in wiboxes:
 		subprocess.call(
-			bashPath + " " +
+			shPath + " " +
 			"-c \"echo '" +
 			"for k,v in pairs("+wibox+") do " +
 			"v.visible = " + ("true" if state else "false") + " " +
@@ -90,7 +90,7 @@ def setWiboxState(state=True, immediate=False):
 	customcmd = customshow if state else customhide
 	if customcmd:
 		subprocess.call(
-			bashPath + " " +
+			shPath + " " +
 			"-c \"echo '" +
 			customcmd +
 			"' | awesome-client\"",
