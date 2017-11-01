@@ -24,13 +24,14 @@ except configparser.MissingSectionHeaderError:
 wiboxes = [ w for w in wiboxes if re.match("^[a-zA-Z_][a-zA-Z0-9_]*$", w) ]
 #python>=3.4: wiboxes = [ w for w in wiboxes if re.fullmatch("[a-zA-Z_][a-zA-Z0-9_]*", w) ]
 
-awesomeVersion = config.get(     "autohidewibox", "awesomeVersion", fallback=4)
-superKeys =      config.get(     "autohidewibox", "superKeys",      fallback="133,134").split(",")
-wiboxes =        config.get(     "autohidewibox", "wiboxname",      fallback="mywibox").split(",")
-customhide =     config.get(     "autohidewibox", "customhide",     fallback=None)
-customshow =     config.get(     "autohidewibox", "customshow",     fallback=None)
-delayShow =      config.getfloat("autohidewibox", "delayShow",      fallback=0)
-delayHide =      config.getfloat("autohidewibox", "delayHide",      fallback=0)
+awesomeVersion = config.get(       "autohidewibox", "awesomeVersion", fallback=4)
+superKeys =      config.get(       "autohidewibox", "superKeys",      fallback="133,134").split(",")
+wiboxes =        config.get(       "autohidewibox", "wiboxname",      fallback="mywibox").split(",")
+customhide =     config.get(       "autohidewibox", "customhide",     fallback=None)
+customshow =     config.get(       "autohidewibox", "customshow",     fallback=None)
+delayShow =      config.getfloat(  "autohidewibox", "delayShow",      fallback=0)
+delayHide =      config.getfloat(  "autohidewibox", "delayHide",      fallback=0)
+debug =          config.getboolean("autohidewibox", "debug",          fallback=False)
 
 delay = {True: delayShow, False: delayHide}
 delayThread = None
@@ -57,18 +58,23 @@ except ValueError:
 
 def setWiboxState(state=True, immediate=False):
 	global delayThread, waitingFor, cancel
-	# pstate = 'show' if state else 'hide'
+	if debug:
+		dbgPstate = "show" if state else "hide"
 	if delay[not state] > 0:
-		# print(pstate+' delay other')
+		if debug:
+			print(dbgPstate, "delay other")
 		if type(delayThread) == threading.Thread and delayThread.is_alive():
 			# two consecutive opposing events cancel out. second event should not be called
-			# print(pstate+' delay other, thread alive -> cancel')
+			if debug:
+				print(dbgPstate, "delay other, thread alive -> cancel")
 			cancel.set()
 			return
 	if delay[state] > 0 and not immediate:
-		# print(pstate+' delay same')
+		if debug:
+			print(dbgPstate + " delay same")
 		if not (type(delayThread) == threading.Thread and delayThread.is_alive()):
-			# print(pstate+' delay same,  thread dead  -> start wait')
+			if debug:
+				print(dbgPstate, "delay same, thread dead -> start wait")
 			waitingFor = state
 			cancel.clear()
 			delayThread = threading.Thread(group=None, target=waitDelay, kwargs={"state": state})
@@ -76,7 +82,8 @@ def setWiboxState(state=True, immediate=False):
 			delayThread.start()
 		# a second event setting the same state is silently discarded
 		return
-	# print(pstate+' !!!')
+	if debug:
+		print("state:", dbgPstate)
 	for wibox in wiboxes:
 		subprocess.call(
 			shPath + " " +
@@ -114,28 +121,35 @@ try:
 		detailmatch = re.match("detail: (\\d+)", l)
 		
 		if eventmatch:
-			# print(eventmatch)
+			if debug:
+				print(eventmatch)
 			try:
 				field = "event"
 				keystate = eventmatch.group(1)
-				# print("found event, waiting for detail...")
+				if debug:
+					print("found event, waiting for detail...")
 			except IndexError:
 				field = None
 				keystate = None
 		
 		if (field is "event") and detailmatch:
-			# print(detailmatch)
+			if debug:
+				print(detailmatch)
 			try:
 				if detailmatch.group(1) in superKeys:
-					# print("is a super key")
+					if debug:
+						print("is a super key")
 					if keystate == "13":  # press
-						# print("showing wibox")
+						if debug:
+							print("showing wibox")
 						setWiboxState(True)
 					if keystate == "14":  # release
-						# print("hiding wibox")
+						if debug:
+							print("hiding wibox")
 						setWiboxState(False)
 			except IndexError:
-				# print("Couldn't parse keystate number.")
+				if debug:
+					print("Couldn't parse keystate number.")
 				pass
 			finally:
 				field = None
