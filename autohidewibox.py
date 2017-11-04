@@ -7,6 +7,8 @@ import os.path as path
 import sys
 import threading
 
+MODE_TRANSIENT = "transient"
+MODE_TOGGLE = "toggle"
 
 config = configparser.ConfigParser()
 try:
@@ -31,11 +33,14 @@ customhide =     config.get(       "autohidewibox", "customhide",     fallback=N
 customshow =     config.get(       "autohidewibox", "customshow",     fallback=None)
 delayShow =      config.getfloat(  "autohidewibox", "delayShow",      fallback=0)
 delayHide =      config.getfloat(  "autohidewibox", "delayHide",      fallback=0)
+mode =           config.get(       "autohidewibox", "mode",           fallback=MODE_TRANSIENT)
 debug =          config.getboolean("autohidewibox", "debug",          fallback=False)
 
 delay = {True: delayShow, False: delayHide}
 delayThread = None
+wiboxIsCurrentlyVisible = False
 waitingFor = False
+nonSuperKeyWasPressed = False
 cancel = threading.Event()
 
 shPath = ""
@@ -57,7 +62,8 @@ except ValueError:
 
 
 def setWiboxState(state=True, immediate=False):
-	global delayThread, waitingFor, cancel
+	global delayThread, waitingFor, cancel, wiboxIsCurrentlyShown
+	wiboxIsCurrentlyShown = state
 	if debug:
 		dbgPstate = "show" if state else "hide"
 	if delay[not state] > 0:
@@ -140,13 +146,25 @@ try:
 					if debug:
 						print("is a super key")
 					if keystate == "13":  # press
-						if debug:
-							print("showing wibox")
-						setWiboxState(True)
+						nonSuperKeyWasPressed = False
+						if mode == MODE_TRANSIENT:
+							if debug:
+								print("showing wibox")
+							setWiboxState(True)
 					if keystate == "14":  # release
-						if debug:
-							print("hiding wibox")
-						setWiboxState(False)
+						if mode == MODE_TRANSIENT:
+							if debug:
+								print("hiding wibox")
+							setWiboxState(False)
+						# Avoid toggling the wibox when a super key is used in conjunction
+						# with another key.
+						elif mode == MODE_TOGGLE and not nonSuperKeyWasPressed:
+							if debug:
+								print("toggling wibox")
+							setWiboxState(not wiboxIsCurrentlyShown)
+							nonSuperKeyWasPressed = False
+				else:
+					nonSuperKeyWasPressed = True
 			except IndexError:
 				if debug:
 					print("Couldn't parse keystate number.")
