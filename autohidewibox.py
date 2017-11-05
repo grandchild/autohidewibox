@@ -22,9 +22,6 @@ try:
 except configparser.MissingSectionHeaderError:
 	pass
 
-# (remove the following line if your wibox variables have strange characters)
-wiboxes = [ w for w in wiboxes if re.match("^[a-zA-Z_][a-zA-Z0-9_]*$", w) ]
-#python>=3.4: wiboxes = [ w for w in wiboxes if re.fullmatch("[a-zA-Z_][a-zA-Z0-9_]*", w) ]
 
 awesomeVersion = config.get(       "autohidewibox", "awesomeVersion", fallback=4)
 superKeys =      config.get(       "autohidewibox", "superKeys",      fallback="133,134").split(",")
@@ -35,6 +32,10 @@ delayShow =      config.getfloat(  "autohidewibox", "delayShow",      fallback=0
 delayHide =      config.getfloat(  "autohidewibox", "delayHide",      fallback=0)
 mode =           config.get(       "autohidewibox", "mode",           fallback=MODE_TRANSIENT)
 debug =          config.getboolean("autohidewibox", "debug",          fallback=False)
+
+# (remove the following line if your wibox variables have strange characters)
+wiboxes = [ w for w in wiboxes if re.match("^[a-zA-Z_][a-zA-Z0-9_]*$", w) ]
+#python>=3.4: wiboxes = [ w for w in wiboxes if re.fullmatch("[a-zA-Z_][a-zA-Z0-9_]*", w) ]
 
 delay = {True: delayShow, False: delayHide}
 delayThread = None
