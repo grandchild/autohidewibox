@@ -20,35 +20,18 @@ try:
 except configparser.MissingSectionHeaderError:
 	pass
 
-awesomeVersion = config.get("autohidewibox",
-                            "awesomeVersion",
-                            fallback=4)
-superKeys = config.get("autohidewibox",
-                       "superKeys",
-                       fallback="133,134,66"
-                      ).split(",")
-
-wiboxes = config.get("autohidewibox",
-                     "wiboxname",
-                     fallback="mywibox"
-                    ).split(",")
 # (remove the following line if your wibox variables have strange characters)
 wiboxes = [ w for w in wiboxes if re.match("^[a-zA-Z_][a-zA-Z0-9_]*$", w) ]
 #python>=3.4: wiboxes = [ w for w in wiboxes if re.fullmatch("[a-zA-Z_][a-zA-Z0-9_]*", w) ]
 
-customhide = config.get("autohidewibox",
-                        "customhide",
-                        fallback=None)
-customshow = config.get("autohidewibox",
-                        "customshow",
-                        fallback=None)
+awesomeVersion = config.get(     "autohidewibox", "awesomeVersion", fallback=4)
+superKeys =      config.get(     "autohidewibox", "superKeys",      fallback="133,134").split(",")
+wiboxes =        config.get(     "autohidewibox", "wiboxname",      fallback="mywibox").split(",")
+customhide =     config.get(     "autohidewibox", "customhide",     fallback=None)
+customshow =     config.get(     "autohidewibox", "customshow",     fallback=None)
+delayShow =      config.getfloat("autohidewibox", "delayShow",      fallback=0)
+delayHide =      config.getfloat("autohidewibox", "delayHide",      fallback=0)
 
-delayShow = config.getfloat("autohidewibox",
-                   "delayShow",
-                   fallback=0)
-delayHide = config.getfloat("autohidewibox",
-                   "delayHide",
-                   fallback=0)
 delay = {True: delayShow, False: delayHide}
 delayThread = None
 waitingFor = False
@@ -74,13 +57,18 @@ except ValueError:
 
 def setWiboxState(state=True, immediate=False):
 	global delayThread, waitingFor, cancel
+	# pstate = 'show' if state else 'hide'
 	if delay[not state] > 0:
+		# print(pstate+' delay other')
 		if type(delayThread) == threading.Thread and delayThread.is_alive():
 			# two consecutive opposing events cancel out. second event should not be called
+			# print(pstate+' delay other, thread alive -> cancel')
 			cancel.set()
 			return
 	if delay[state] > 0 and not immediate:
+		# print(pstate+' delay same')
 		if not (type(delayThread) == threading.Thread and delayThread.is_alive()):
+			# print(pstate+' delay same,  thread dead  -> start wait')
 			waitingFor = state
 			cancel.clear()
 			delayThread = threading.Thread(group=None, target=waitDelay, kwargs={"state": state})
@@ -88,6 +76,7 @@ def setWiboxState(state=True, immediate=False):
 			delayThread.start()
 		# a second event setting the same state is silently discarded
 		return
+	# print(pstate+' !!!')
 	for wibox in wiboxes:
 		subprocess.call(
 			shPath + " " +
