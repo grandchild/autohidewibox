@@ -62,26 +62,26 @@ except ValueError:
 	hideCommand = hideCommand4
 
 
+def _debug(*args):
+	if debug:
+		print(*args)
+
+
 def setWiboxState(state=True, immediate=False):
 	global delayThread, waitingFor, cancel, wiboxIsCurrentlyShown
 	wiboxIsCurrentlyShown = state
-	if debug:
-		dbgPstate = "show" if state else "hide"
+	dbgPstate = "show" if state else "hide"
 	if delay[not state] > 0:
-		if debug:
-			print(dbgPstate, "delay other")
+		_debug(dbgPstate, "delay other")
 		if type(delayThread) == threading.Thread and delayThread.is_alive():
 			# two consecutive opposing events cancel out. second event should not be called
-			if debug:
-				print(dbgPstate, "delay other, thread alive -> cancel")
+			_debug(dbgPstate, "delay other, thread alive -> cancel")
 			cancel.set()
 			return
 	if delay[state] > 0 and not immediate:
-		if debug:
-			print(dbgPstate + " delay same")
+		_debug(dbgPstate + " delay same")
 		if not (type(delayThread) == threading.Thread and delayThread.is_alive()):
-			if debug:
-				print(dbgPstate, "delay same, thread dead -> start wait")
+			_debug(dbgPstate, "delay same, thread dead -> start wait")
 			waitingFor = state
 			cancel.clear()
 			delayThread = threading.Thread(group=None, target=waitDelay, kwargs={"state": state})
@@ -89,8 +89,7 @@ def setWiboxState(state=True, immediate=False):
 			delayThread.start()
 		# a second event setting the same state is silently discarded
 		return
-	if debug:
-		print("state:", dbgPstate)
+	_debug("state:", dbgPstate)
 	for wibox in wiboxes:
 		subprocess.call(
 			shPath + " " +
@@ -128,47 +127,39 @@ try:
 		detailmatch = re.match("detail: (\\d+)", l)
 		
 		if eventmatch:
-			if debug:
-				print(eventmatch)
+			_debug(eventmatch)
 			try:
 				field = "event"
 				keystate = eventmatch.group(1)
-				if debug:
-					print("found event, waiting for detail...")
+				_debug("found event, waiting for detail...")
 			except IndexError:
 				field = None
 				keystate = None
 		
 		if (field is "event") and detailmatch:
-			if debug:
-				print(detailmatch)
+			_debug(detailmatch)
 			try:
 				if detailmatch.group(1) in superKeys:
-					if debug:
-						print("is a super key")
+					_debug("is a super key")
 					if keystate == "13":  # press
 						nonSuperKeyWasPressed = False
 						if mode == MODE_TRANSIENT:
-							if debug:
-								print("showing wibox")
+							_debug("showing wibox")
 							setWiboxState(True)
 					if keystate == "14":  # release
 						if mode == MODE_TRANSIENT:
-							if debug:
-								print("hiding wibox")
+							_debug("hiding wibox")
 							setWiboxState(False)
 						# Avoid toggling the wibox when a super key is used in conjunction
 						# with another key.
 						elif mode == MODE_TOGGLE and not nonSuperKeyWasPressed:
-							if debug:
-								print("toggling wibox")
+							_debug("toggling wibox")
 							setWiboxState(not wiboxIsCurrentlyShown)
 							nonSuperKeyWasPressed = False
 				else:
 					nonSuperKeyWasPressed = True
 			except IndexError:
-				if debug:
-					print("Couldn't parse keystate number.")
+				_debug("Couldn't parse keystate number.")
 				pass
 			finally:
 				field = None
