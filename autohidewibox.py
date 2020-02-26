@@ -12,10 +12,12 @@ MODE_TOGGLE = "toggle"
 
 config = configparser.ConfigParser()
 try:
-    userawesomeconf = path.join(path.expanduser("~"), ".config/awesome/autohidewibox.conf")
+    userawesomeconf = path.join(
+        path.expanduser("~"), ".config/awesome/autohidewibox.conf"
+    )
     userconf = path.join(path.expanduser("~"), ".config/autohidewibox.conf")
     systemconf = "/etc/autohidewibox.conf"
-    if len(sys.argv)>1 and path.isfile(sys.argv[1]):
+    if len(sys.argv) > 1 and path.isfile(sys.argv[1]):
         config.read(sys.argv[1])
     elif path.isfile(userawesomeconf):
         config.read(userawesomeconf)
@@ -27,19 +29,19 @@ except configparser.MissingSectionHeaderError:
     pass
 
 
-awesomeVersion = config.get(       "autohidewibox", "awesomeVersion", fallback=4)
-superKeys =      config.get(       "autohidewibox", "superKeys",      fallback="133,134").split(",")
-wiboxes =        config.get(       "autohidewibox", "wiboxname",      fallback="mywibox").split(",")
-customhide =     config.get(       "autohidewibox", "customhide",     fallback=None)
-customshow =     config.get(       "autohidewibox", "customshow",     fallback=None)
-delayShow =      config.getfloat(  "autohidewibox", "delayShow",      fallback=0)
-delayHide =      config.getfloat(  "autohidewibox", "delayHide",      fallback=0)
-mode =           config.get(       "autohidewibox", "mode",           fallback=MODE_TRANSIENT)
-debug =          config.getboolean("autohidewibox", "debug",          fallback=False)
+awesomeVersion = config.get("autohidewibox", "awesomeVersion", fallback=4)
+superKeys = config.get("autohidewibox", "superKeys", fallback="133,134").split(",")
+wiboxes = config.get("autohidewibox", "wiboxname", fallback="mywibox").split(",")
+customhide = config.get("autohidewibox", "customhide", fallback=None)
+customshow = config.get("autohidewibox", "customshow", fallback=None)
+delayShow = config.getfloat("autohidewibox", "delayShow", fallback=0)
+delayHide = config.getfloat("autohidewibox", "delayHide", fallback=0)
+mode = config.get("autohidewibox", "mode", fallback=MODE_TRANSIENT)
+debug = config.getboolean("autohidewibox", "debug", fallback=False)
 
 # (remove the following line if your wibox variables have strange characters)
-wiboxes = [ w for w in wiboxes if re.match("^[a-zA-Z_][a-zA-Z0-9_]*$", w) ]
-#python>=3.4: wiboxes = [ w for w in wiboxes if re.fullmatch("[a-zA-Z_][a-zA-Z0-9_]*", w) ]
+wiboxes = [w for w in wiboxes if re.match("^[a-zA-Z_][a-zA-Z0-9_]*$", w)]
+# python>=3.4: wiboxes = [ w for w in wiboxes if re.fullmatch("[a-zA-Z_][a-zA-Z0-9_]*", w) ]
 
 delay = {True: delayShow, False: delayHide}
 delayThread = None
@@ -88,7 +90,9 @@ def setWiboxState(state=True, immediate=False):
             _debug(dbgPstate, "delay same, thread dead -> start wait")
             waitingFor = state
             cancel.clear()
-            delayThread = threading.Thread(group=None, target=waitDelay, kwargs={"state": state})
+            delayThread = threading.Thread(
+                group=None, target=waitDelay, kwargs={"state": state}
+            )
             delayThread.daemon = True
             delayThread.start()
         # a second event setting the same state is silently discarded
@@ -96,31 +100,33 @@ def setWiboxState(state=True, immediate=False):
     _debug("state:", dbgPstate)
     for wibox in wiboxes:
         subprocess.call(
-            shPath + " " +
-            "-c \"echo '" +
-            hideCommand.format(wibox=wibox, state="true" if state else "false") +
-            "' | awesome-client\"",
-            shell=True)
-    
+            shPath
+            + " "
+            + "-c \"echo '"
+            + hideCommand.format(wibox=wibox, state="true" if state else "false")
+            + "' | awesome-client\"",
+            shell=True,
+        )
+
     customcmd = customshow if state else customhide
     if customcmd:
         subprocess.call(
-            shPath + " " +
-            "-c \"echo '" +
-            customcmd +
-            "' | awesome-client\"",
-            shell=True)
+            shPath + " " + "-c \"echo '" + customcmd + "' | awesome-client\"",
+            shell=True,
+        )
 
 
 def waitDelay(state=True):
-    if not cancel.wait(delay[state]/1000):
+    if not cancel.wait(delay[state] / 1000):
         setWiboxState(state=state, immediate=True)
 
 
 try:
     setWiboxState(False)
-    
-    proc = subprocess.Popen(['xinput', '--test-xi2', '--root', '3'], stdout=subprocess.PIPE)
+
+    proc = subprocess.Popen(
+        ["xinput", "--test-xi2", "--root", "3"], stdout=subprocess.PIPE
+    )
 
     field = None
     keystate = None
@@ -129,7 +135,7 @@ try:
         l = line.decode("utf-8").strip()
         eventmatch = re.match("EVENT type (\\d+) \\(.+\\)", l)
         detailmatch = re.match("detail: (\\d+)", l)
-        
+
         if eventmatch:
             _debug(eventmatch)
             try:
@@ -139,7 +145,7 @@ try:
             except IndexError:
                 field = None
                 keystate = None
-        
+
         if (field is "event") and detailmatch:
             _debug(detailmatch)
             try:
