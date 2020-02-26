@@ -12,13 +12,17 @@ MODE_TOGGLE = "toggle"
 
 config = configparser.ConfigParser()
 try:
+	userawesomeconf = path.join(path.expanduser("~"), ".config/awesome/autohidewibox.conf")
 	userconf = path.join(path.expanduser("~"), ".config/autohidewibox.conf")
+	systemconf = "/etc/autohidewibox.conf"
 	if len(sys.argv)>1 and path.isfile(sys.argv[1]):
 		config.read(sys.argv[1])
+	elif path.isfile(userawesomeconf):
+		config.read(userawesomeconf)
 	elif path.isfile(userconf):
 		config.read(userconf)
 	else:
-		config.read("/etc/autohidewibox.conf")
+		config.read(systemconf)
 except configparser.MissingSectionHeaderError:
 	pass
 

@@ -17,6 +17,7 @@ autohidewibox.py [configfile.conf]
 ```
 Config files will be tried in the order
  * commandline parameter
+ * `~/.config/awesome/autohidewibox.conf`
  * `~/.config/autohidewibox.conf`
  * `/etc/autohidewibox.conf`
 
