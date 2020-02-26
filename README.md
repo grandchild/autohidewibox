@@ -40,3 +40,11 @@ Note that if, for autostarting programs, you use that little `run_once`-script t
 
 #### Credits
 Inspired by the first idea in http://stackoverflow.com/a/21837280 . Thanks :)
+
+### License
+
+[![License](https://img.shields.io/github/license/grandchild/autohidewibox.svg)](https://creativecommons.org/publicdomain/zero/1.0/)
+
+You may use this code without attribution, that is without mentioning where it's from or
+who wrote it. I would actually prefer if you didn't mention me. You may even claim it's
+your own.
