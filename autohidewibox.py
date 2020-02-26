@@ -29,13 +29,13 @@ except configparser.MissingSectionHeaderError:
     pass
 
 
-awesome_version = config.get("autohidewibox", "awesomeVersion", fallback=4)
-super_keys = config.get("autohidewibox", "superKeys", fallback="133,134").split(",")
+awesome_version = config.get("autohidewibox", "awesome_version", fallback=4)
+super_keys = config.get("autohidewibox", "super_keys", fallback="133,134").split(",")
 wiboxes = config.get("autohidewibox", "wiboxname", fallback="mywibox").split(",")
-custom_hide = config.get("autohidewibox", "customhide", fallback=None)
-custom_show = config.get("autohidewibox", "customshow", fallback=None)
-delay_show = config.getfloat("autohidewibox", "delayShow", fallback=0)
-delay_hide = config.getfloat("autohidewibox", "delayHide", fallback=0)
+custom_hide = config.get("autohidewibox", "custom_hide", fallback=None)
+custom_show = config.get("autohidewibox", "custom_show", fallback=None)
+delay_show = config.getfloat("autohidewibox", "delay_show", fallback=0)
+delay_hide = config.getfloat("autohidewibox", "delay_hide", fallback=0)
 mode = config.get("autohidewibox", "mode", fallback=MODE_TRANSIENT)
 debug = config.getboolean("autohidewibox", "debug", fallback=False)
 
