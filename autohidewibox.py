@@ -74,8 +74,8 @@ def _debug(*args):
 
 
 def set_wibox_state(state=True, immediate=False):
-    global delay_thread, waiting_for, cancel, wibox_is_currently_shown
-    wibox_is_currently_shown = state
+    global delay_thread, waiting_for, cancel, wibox_is_currently_visible
+    wibox_is_currently_visible = state
     dbg_pstate = "show" if state else "hide"
     if delay[not state] > 0:
         _debug(dbg_pstate, "delay other")
@@ -164,7 +164,7 @@ try:
                         # with another key.
                         elif mode == MODE_TOGGLE and not non_super_key_was_pressed:
                             _debug("toggling wibox")
-                            set_wibox_state(not wibox_is_currently_shown)
+                            set_wibox_state(not wibox_is_currently_visible)
                             non_super_key_was_pressed = False
                 else:
                     non_super_key_was_pressed = True
