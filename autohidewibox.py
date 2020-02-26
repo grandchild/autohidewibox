@@ -41,7 +41,8 @@ debug = config.getboolean("autohidewibox", "debug", fallback=False)
 
 # (remove the following line if your wibox variables have strange characters)
 wiboxes = [w for w in wiboxes if re.match("^[a-zA-Z_][a-zA-Z0-9_]*$", w)]
-# python>=3.4: wiboxes = [ w for w in wiboxes if re.fullmatch("[a-zA-Z_][a-zA-Z0-9_]*", w) ]
+### python>=3.4:
+# wiboxes = [ w for w in wiboxes if re.fullmatch("[a-zA-Z_][a-zA-Z0-9_]*", w) ]
 
 delay = {True: delay_show, False: delay_hide}
 delay_thread = None
@@ -80,7 +81,8 @@ def set_wibox_state(state=True, immediate=False):
     if delay[not state] > 0:
         _debug(dbg_pstate, "delay other")
         if type(delay_thread) == threading.Thread and delay_thread.is_alive():
-            # two consecutive opposing events cancel out. second event should not be called
+            # two consecutive opposing events cancel out. second event should not be
+            # called
             _debug(dbg_pstate, "delay other, thread alive -> cancel")
             cancel.set()
             return
@@ -160,8 +162,8 @@ try:
                         if mode == MODE_TRANSIENT:
                             _debug("hiding wibox")
                             set_wibox_state(False)
-                        # Avoid toggling the wibox when a super key is used in conjunction
-                        # with another key.
+                        # Avoid toggling the wibox when a super key is used in
+                        # conjunction with another key.
                         elif mode == MODE_TOGGLE and not non_super_key_was_pressed:
                             _debug("toggling wibox")
                             set_wibox_state(not wibox_is_currently_visible)
