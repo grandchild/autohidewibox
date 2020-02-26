@@ -11,6 +11,10 @@ Extending away from what the name suggests it can also execute any custom lua co
 hide or show, specified in the config file.
 
 ### Installation
+Install the `xinput` binary. The package is named `xinput` in Debian/Ubuntu and
+`xorg-xinput` in Arch. (Some other popular distros don't seem to readily provide this
+package, according to [pkgs.org](https://pkgs.org/search/?q=xinput)).
+
 Download [the python script](
 https://raw.githubusercontent.com/grandchild/autohidewibox/master/autohidewibox.py)
 directly and put it somewhere nice – `~/.config/awesome/` seems fitting – and make it
