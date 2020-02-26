@@ -180,4 +180,4 @@ except KeyboardInterrupt:
     pass
 finally:
     set_wibox_state(True, True)
-    # print("Shutting down")
+    _debug("Shutting down")
