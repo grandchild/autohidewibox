@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-import subprocess
-import re
 import configparser
 import os.path as path
+import re
+import subprocess
 import sys
 import threading
 
