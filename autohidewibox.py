@@ -147,7 +147,7 @@ try:
                 field = None
                 key_state = None
 
-        if (field is "event") and detail_match:
+        if (field == "event") and detail_match:
             _debug(detail_match)
             try:
                 if detail_match.group(1) in super_keys:
